@@ -1,65 +1,66 @@
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class Service implements Runnable {
 
 	private Socket clientSocket;
-	private BufferedReader in;
-	private PrintWriter out;
-	private ArrayList <User> lista_users;
-	private ArrayList <Music> lista_musicas;
+	private Biblioteca biblioteca;
 	
-	public Service (Socket clientSocket, ArrayList <User> lista_users, ArrayList <Music> lista_musicas) throws IOException {
+	public Service (Socket clientSocket, Biblioteca biblioteca) throws IOException {
 		
 		this.clientSocket = clientSocket;
-		
-		this.in = new BufferedReader (new InputStreamReader (this.clientSocket.getInputStream()));
-		this.out = new PrintWriter (this.clientSocket.getOutputStream());
-		
-		this.lista_users = lista_users;
-		this.lista_musicas = lista_musicas;
-	}
-	
-	public boolean logIn (String email, String password) {
-		
-		boolean resultado = false;
-		
-		for (User user: this.lista_users)
-			if (user.get_email().equals(email) && user.get_password().equals(password))
-				resultado = true;
-		
-		return resultado;
-		
+		this.biblioteca = biblioteca;
 	}
 	
 	public void run () {
+		String answer;
 		
-		 while (true) {
-			 String input = null;
-			try {
-				input = in.readLine();
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
+			PrintWriter out = new PrintWriter(this.clientSocket.getOutputStream());
+			
+			while (true) {
+				String s = in.readLine();
+				String parser [] = s.trim().split(":");
 				
-				if (!input.equals("Quit")) {
-					out.println(input);
+				if ("create account".equals(parser[0])) {
+					this.biblioteca.createAccount(parser[1], parser[2]);
+					out.println("Conta com email: " + parser[1] + " criada\n");
 					out.flush();
-				} else this.stop();
+				}
 				
-			} catch (IOException e) {
-				e.printStackTrace();
+				else if ("upload".equals(parser[0])){
+					 InputStream inS = this.clientSocket.getInputStream();
+					 OutputStream outS = new FileOutputStream(new File ("/Users/Jota/Desktop/SDSERVER/test2.xml"));
+					 byte[] bytes = new byte[1000000];
+				
+					 int count;
+					 System.out.println ("Receiving");
+				        while ((count = inS.read(bytes)) > 0) {
+				            outS.write(bytes, 0, count);
+				        }
+				        
+				     System.out.println("Received");
+				        
+				     outS.close();
+				     inS.close();
+				}
+				
 			}
-			System.out.println (input);
-		 }
+			
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
-	
-	public void stop () throws IOException {
-		this.in.close();
-		this.out.close();
-		this.clientSocket.close();
-	}
 }
