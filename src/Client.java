@@ -27,13 +27,15 @@ public class Client {
     	this.out = new PrintWriter (this.clientSocket.getOutputStream());
     	
     	while (true ) {
-    		
+			System.out.println("To create an account write: create account:<username>:<password>");
+			System.out.println("To upload a file write: upload:<file path>");
+			System.out.println("To leave write: quit");
     		String input = buffer.readLine();
     		String parser [] = input.trim().split(":");
     		this.out.println(input);
     		this.out.flush();
     		
-    		if ("quit".equals(parser[0]) || parser[0] == null)
+    		if ("quit".equals(parser[0]))
     			break;
     		
     		else if ("create account".equals(parser[0])) 
@@ -54,7 +56,6 @@ public class Client {
 				}
 				out.close();
 				in.close();
-				break;
     		}
     	}
     }

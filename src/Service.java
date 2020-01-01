@@ -25,10 +25,11 @@ public class Service implements Runnable {
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
 			PrintWriter out = new PrintWriter(this.clientSocket.getOutputStream());
-			
-			while (true) {
-				String s = in.readLine();
-				String parser [] = s.trim().split(":");
+			String s;
+			while ((s = in.readLine()) != null) {
+				System.out.println("lido: " + s);
+				String p = s.trim();
+				String parser [] = p.split(":");
 				
 				if ("create account".equals(parser[0])) {
 					this.biblioteca.createAccount(parser[1], parser[2]);
@@ -38,7 +39,7 @@ public class Service implements Runnable {
 				
 				else if ("upload".equals(parser[0])){
 					 InputStream inS = this.clientSocket.getInputStream();
-					 OutputStream outS = new FileOutputStream(new File ("/Users/Jota/Desktop/SDSERVER/test2.xml"));
+					 OutputStream outS = new FileOutputStream(new File ("/home/sofia/Downloads/SD-master/test2.xml"));
 					 byte[] bytes = new byte[1000000];
 				
 					 int count;
