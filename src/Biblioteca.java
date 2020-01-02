@@ -1,20 +1,21 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Biblioteca {
 
 	private ArrayList <User> lista_users;
-	private ArrayList <Music> lista_musicas;
+	private HashMap <Integer, Music> lista_musicas;
 	
 	public Biblioteca () {
 		this.lista_users = new ArrayList <User> ();
-		this.lista_musicas = new ArrayList <Music> ();
+		this.lista_musicas = new HashMap <Integer,Music> ();
 	}
 	
 	public void adicionaMusica (Music music) {
-		this.lista_musicas.add(music);
+		this.lista_musicas.put(music.get_id(), music);
 	}
 	
-	public void createAccount (String email, String password) {
+	public synchronized void createAccount (String email, String password) {
 		User user = new User (email, password);
 		this.lista_users.add(user);
 	}
@@ -30,24 +31,22 @@ public class Biblioteca {
 		return resultado;
 	}
 	
-	//funcao que dada uma etiqueta devolve todas as musicas que correspondam a essa tiqueta
-	//devolve num formato especifico:
-	//"musica1:<id_musica>:<nome_musica>:<autor_musica>//musica2:<id_musica2>:<nome_musica2>:<autor_musica2>//...."
-	//tendo um padrao pre-definido ajuda a filtrar as mensagens já que nao se podem usar bibliotecas de serializaçao.
 	
 	public String devolveMusica (String etiqueta) {
-		String resultado = null;
 		StringBuilder sb = null;
+		sb.append("");
 		
-		for (Music m: this.lista_musicas) {
-			for (int i = 0; i < m.get_categorias().length; i++) {
-				if (m.get_categorias()[i].equals(etiqueta))
-					sb.append(m.to_String());
-					sb.append("//");
-			}
-		}
+		this.lista_musicas.forEach((key, value) -> {
+		    for (int i = 0; i < value.get_categorias().length; i++) {
+		    	if (value.get_categorias()[i].equals(etiqueta)) {
+		    		sb.append(value.to_String());
+		    	}
+		    }
+		    
+		});
 		
-		resultado = sb.toString();
-		return resultado;
+		return sb.toString();
+	
 	}
 }
+s
