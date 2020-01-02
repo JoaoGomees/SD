@@ -34,28 +34,44 @@ public class Service implements Runnable {
 				String parser [] = p.split(":");
 				int parser_size = parser.length;
 				
-				switch (parser[0]) {
-					case "create account": 	this.biblioteca.createAccount(parser[1], parser[2]);
-											out.println("Conta com email: " + parser[1] + " criada\n");
-											out.flush();
-											
-					case "upload":	 InputStream inS = this.clientSocket.getInputStream();
-					 				File f = new File(parser[1]);
-					 				String fname = f.getName();
-					 				OutputStream outS = new FileOutputStream(new File ("music/" + fname + ".xml"));
-					 				byte[] bytes = new byte[1000000];
 				
-					 				int count;
-					 				System.out.println ("Receiving");
-					 				while ((count = inS.read(bytes)) > 0) {
-					 					outS.write(bytes, 0, count);
-					 				}
-				        
-					 				System.out.println("Received");
-				        
-					 				outS.close();
-					 				inS.close();
-					}	
+				if ("create account".equals(parser[0])) {
+					this.biblioteca.createAccount(parser[1], parser[2]);
+					out.println("Conta com email: " + parser[1] + " criada\n");
+					out.flush();
+				}
+				
+				else if ("log in".equals(parser[0])) {
+					if (this.biblioteca.logIn(parser[1], parser[2])) {
+						out.println("Sucesso");
+						out.flush();
+					}
+						
+					else {
+						out.println("Falhou! Tente again!");
+						out.flush();
+					}
+				}
+				
+				else if ("upload".equals(parser[0])) {
+					InputStream inS = this.clientSocket.getInputStream();
+	 				File f = new File(parser[1]);
+	 				String fname = f.getName();
+	 				OutputStream outS = new FileOutputStream(new File ("music/" + fname + ".xml"));
+	 				byte[] bytes = new byte[1000000];
+
+	 				int count;
+	 				System.out.println ("Receiving");
+	 				while ((count = inS.read(bytes)) > 0) {
+	 					outS.write(bytes, 0, count);
+	 				}
+        
+	 				System.out.println("Received");
+        
+	 				//outS.close();
+	 				//inS.close();
+				}
+				
 				
 			}
 			
