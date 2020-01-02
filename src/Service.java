@@ -37,11 +37,9 @@ public class Service implements Runnable {
 				
 				if ("create account".equals(parser[0])) {
 					this.biblioteca.createAccount(parser[1], parser[2]);
-					out.println("Conta com email: " + parser[1] + " criada\n");
-					out.flush();
 				}
 				
-				else if ("log in".equals(parser[0])) {
+				if ("log in".equals(parser[0])) {
 					if (this.biblioteca.logIn(parser[1], parser[2])) {
 						out.println("Sucesso");
 						out.flush();
@@ -53,23 +51,32 @@ public class Service implements Runnable {
 					}
 				}
 				
-				else if ("upload".equals(parser[0])) {
-					InputStream inS = this.clientSocket.getInputStream();
-	 				File f = new File(parser[1]);
-	 				String fname = f.getName();
-	 				OutputStream outS = new FileOutputStream(new File ("music/" + fname + ".xml"));
-	 				byte[] bytes = new byte[1000000];
-
-	 				int count;
-	 				System.out.println ("Receiving");
-	 				while ((count = inS.read(bytes)) > 0) {
-	 					outS.write(bytes, 0, count);
-	 				}
-        
-	 				System.out.println("Received");
-        
-	 				//outS.close();
-	 				//inS.close();
+				if ("upload".equals(parser[0])) {
+					String categorias [] = new String [parser.length - 5];
+					
+					for (int i = 0; i < categorias.length; i++) {
+						categorias [i] = parser[i+5];
+					}
+					Music nova = new Music (this.biblioteca.get_id(), parser[2], parser[3], parser[4], categorias);
+					this.biblioteca.adicionaMusica(nova);
+					this.biblioteca.inc_id();
+					
+					 InputStream inS = this.clientSocket.getInputStream();
+					 File f = new File(parser[1]);
+					 String fname = f.getName();
+					 OutputStream outS = new FileOutputStream(new File ("music/" + fname + ".xml"));
+					 byte[] bytes = new byte[1000000];
+				
+					 int count;
+					 System.out.println ("Receiving");
+				        while ((count = inS.read(bytes)) > 0) {
+				            outS.write(bytes, 0, count);
+				        }
+				        
+				     System.out.println("Received");
+				        
+				     outS.close();
+				     inS.close();
 				}
 				
 				
