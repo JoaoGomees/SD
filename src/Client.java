@@ -46,16 +46,16 @@ public class Client {
 				File file = new File(parser[1]);
 				long length = file.length();
 				byte[] bytes = new byte[1000000];
-				InputStream in = new FileInputStream(file);
-				OutputStream out = this.clientSocket.getOutputStream();
+				InputStream inS = new FileInputStream(file);
+				OutputStream outS = this.clientSocket.getOutputStream();
 				int count;
 	
 				System.out.println("Sending");
-				while ((count = in.read(bytes)) > 0) {
-					out.write(bytes, 0, count);
+				while ((count = inS.read(bytes)) > 0) {
+					outS.write(bytes, 0, count);
 				}
-				out.close();
-				in.close();
+				//outS.close();
+				//inS.close();
     		}
     	}
     }

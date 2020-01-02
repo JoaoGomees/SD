@@ -39,7 +39,9 @@ public class Service implements Runnable {
 				
 				else if ("upload".equals(parser[0])){
 					 InputStream inS = this.clientSocket.getInputStream();
-					 OutputStream outS = new FileOutputStream(new File ("/home/sofia/Downloads/SD-master/test2.xml"));
+					 File f = new File(parser[1]);
+					 String fname = f.getName();
+					 OutputStream outS = new FileOutputStream(new File ("music/" + fname + ".xml"));
 					 byte[] bytes = new byte[1000000];
 				
 					 int count;
