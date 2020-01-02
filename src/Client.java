@@ -27,36 +27,43 @@ public class Client {
     	this.out = new PrintWriter (this.clientSocket.getOutputStream());
     	
     	while (true ) {
-			System.out.println("To create an account write: create account:<username>:<password>");
-			System.out.println("To upload a file write: upload:<file path>");
-			System.out.println("To leave write: quit");
+			System.out.println("To create an account write -> create account:<username>:<password>");
+			System.out.println("To log in with your account write -> log in:<username>:<password>");
+			
     		String input = buffer.readLine();
     		String parser [] = input.trim().split(":");
     		this.out.println(input);
     		this.out.flush();
     		
-    		if ("quit".equals(parser[0]))
-    			break;
     		
-    		else if ("create account".equals(parser[0])) 
-    			System.out.println(in.readLine());
+    		if ("quit".equals(parser[0])) break;
+    		
+    		else if ("create account".equals(parser[0])) System.out.println(in.readLine());
+    		
+    		else if ("log in".equals(parser[0])) {
+    			String answer = in.readLine();
+    			System.out.println (answer);
+				if (answer.equals("Sucesso")) 
+					System.out.println ("Para fazer um upload escreva -> upload:<file_path>:<nome_musica>:<nome_autor>:<ano>:<etiquetaVarias>");
+				else ;
+    		}
     		
     		else if ("upload".equals(parser[0])) {
+    			
     			System.out.println("Here");
 				File file = new File(parser[1]);
-				long length = file.length();
 				byte[] bytes = new byte[1000000];
-				InputStream inS = new FileInputStream(file);
+				InputStream inS	 = new FileInputStream(file);
 				OutputStream outS = this.clientSocket.getOutputStream();
 				int count;
-	
+
 				System.out.println("Sending");
 				while ((count = inS.read(bytes)) > 0) {
 					outS.write(bytes, 0, count);
 				}
-				//outS.close();
-				//inS.close();
     		}
+    		
+    		
     	}
     }
     
