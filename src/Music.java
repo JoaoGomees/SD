@@ -4,23 +4,20 @@ public class Music {
 	private int identificador;
 	private String nome;
 	private String autor;
-	private int duration; //em segundos
-	private int ano;
+	private String ano;
 	private String [] categorias;
 	private int numero_downloads;
-	private String file_path;
 	
-	public Music (int id, String nome, String autor, int duration, int ano, String [] categorias, String file_path) {
+	public Music (int id, String nome, String autor, String ano, String [] etiquetas) {
 		this.identificador = id;
 		this.nome = nome;
 		this.autor = autor;
-		this.duration = duration;
 		this.ano = ano;
 		this.numero_downloads = 0;
-		this.file_path = file_path;
+		this.categorias = new String [100];
 		
-		for (int i = 0; i < categorias.length; i++) 
-			this.categorias [i] = categorias [i];
+		for (int i = 0; i < etiquetas.length; i++)
+			this.categorias[i] = etiquetas[i];
 	}
 	
 	public int get_id () {
@@ -35,11 +32,8 @@ public class Music {
 		return this.autor;
 	}
 	
-	public int get_duration () {
-		return this.duration;
-	}
 	
-	public int get_ano () {
+	public String get_ano () {
 		return this.ano;
 	}
 	
@@ -51,10 +45,6 @@ public class Music {
 		return this.numero_downloads;
 	}
 	
-	public String get_filePath () {
-		return this.file_path;
-	}
-	
 	public void inc_numeroDownloads () {
 		this.numero_downloads++;
 	}
@@ -62,7 +52,7 @@ public class Music {
 	public String to_String () {
 		StringBuilder sb = null;
 		sb.append("musica:" + this.get_id() + ":" + this.get_nome() + ":" + this.get_autor());
-		
+		sb.append("\n");
 		return sb.toString();
 	}
 }
