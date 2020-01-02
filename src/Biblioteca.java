@@ -3,12 +3,22 @@ import java.util.HashMap;
 
 public class Biblioteca {
 
+	private int id_musica;
 	private ArrayList <User> lista_users;
 	private HashMap <Integer, Music> lista_musicas;
 	
 	public Biblioteca () {
 		this.lista_users = new ArrayList <User> ();
 		this.lista_musicas = new HashMap <Integer,Music> ();
+		this.id_musica = 0;
+	}
+	
+	public int get_id () {
+		return this.id_musica;
+	}
+	
+	public void inc_id () {
+		this.id_musica++;
 	}
 	
 	public void adicionaMusica (Music music) {
@@ -49,4 +59,3 @@ public class Biblioteca {
 	
 	}
 }
-s
