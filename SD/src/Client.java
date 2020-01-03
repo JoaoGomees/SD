@@ -1,6 +1,8 @@
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,6 +10,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Client {
@@ -52,6 +56,7 @@ public class Client {
     		if ("log in".equals(parser[0]))  {
     			String answer = in.readLine();
      			if (answer.equals("Sucesso")) {
+     				System.out.println ("Sucesso");
      				this.login = true;
      			} else System.out.println(answer);
      			
@@ -62,21 +67,35 @@ public class Client {
     			System.out.println("Here");
 				File file = new File(parser[1]);
 				long length = file.length();
+				
+				
 				byte[] bytes = new byte[(int)length];
 				InputStream inS = new FileInputStream(file);
 				OutputStream outS = this.clientSocket.getOutputStream();
 				int count;
 	
 				System.out.println("Sending");
-				while ((count = inS.read(bytes)) > 0) {
+				while ((count = inS.read(bytes)) != -1) {
 					outS.write(bytes, 0, count);
 					outS.flush();
 				}
 			}
-    		
+			
+			if ("download".equals(parser[0])) {
+				
+				byte[] mybytearray = new byte[1024];
+				InputStream is = this.clientSocket.getInputStream();
+			    FileOutputStream fos = new FileOutputStream("/Users/Jota/Desktop/musicas/" + parser[1] + ".xml");
+			    BufferedOutputStream bos = new BufferedOutputStream(fos);
+			    int bytesRead = is.read(mybytearray, 0, mybytearray.length);
+			    bos.write(mybytearray, 0, bytesRead);
+			    bos.flush();
+				
+			}
+			
     		if ("ver musicas".equals(parser[0])) {
     			String answer = in.readLine();
-    			System.out.println(answer +"\n");
+    			System.out.println(answer);
     		}
     		
     		
