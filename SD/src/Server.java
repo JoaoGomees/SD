@@ -7,7 +7,7 @@ public class Server {
 	
 	
 	public static void main (String args []) throws IOException {
-		ServerSocket socket = new ServerSocket (6666);
+		ServerSocket socket = new ServerSocket (6666); 
 		
 		Biblioteca biblioteca = new Biblioteca(); //biblioteca comum a todas as threads
 		
