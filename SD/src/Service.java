@@ -13,6 +13,7 @@ public class Service implements Runnable {
 
 	private Socket clientSocket;
 	private Biblioteca biblioteca;
+	private static final int MAXDOWN = 10;
 	
 	public Service (Socket clientSocket, Biblioteca biblioteca) throws IOException {
 		
@@ -97,36 +98,55 @@ public class Service implements Runnable {
 				
 				if ("download".equals(parser[0])) {
 					
-					File file = new File("Music/" + parser[1]);
-					long length = file.length();
-					if (length > 7000000) {
-						out.println("Size too big!");
-						out.flush();
-					}
-					
+					if (this.biblioteca.get_downloadsOcorrer() == this.MAXDOWN)
+						try {
+							this.wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					else {
-						this.biblioteca.inc_downloads(Integer.parseInt(parser[1]));
+						this.biblioteca.inc_downloads();
+						File file = new File("Music/" + parser[1]);
+						long length = file.length();
 						
-						out.println(this.biblioteca.get_music(Integer.parseInt(parser[1])));
-						out.flush();
-						
-						byte[] bytes = new byte[(int)length];
-						InputStream inS = new FileInputStream(file);
-						System.out.println(file.length());
-						OutputStream outS = this.clientSocket.getOutputStream();
-						int count;
-			
-						System.out.println("Sending");
-						while (((count = inS.read(bytes)) > 1)) {
-							outS.write(bytes, 0, count);
-							length -= count;
-							System.out.println(length);
-							if (length == 0) break;
+						if (length > 7000000) {
+							out.println("Size too big!");
+							out.flush();
 						}
 						
-						System.out.println("Sent");
+						else {
+							this.biblioteca.inc_downloads(Integer.parseInt(parser[1]));
+							
+							out.println(this.biblioteca.get_music(Integer.parseInt(parser[1])));
+							out.flush();
+							
+							byte[] bytes = new byte[(int)length];
+							InputStream inS = new FileInputStream(file);
+							System.out.println(file.length());
+							OutputStream outS = this.clientSocket.getOutputStream();
+							int count;
+				
+							System.out.println("Sending");
+							while (((count = inS.read(bytes)) > 1)) {
+								outS.write(bytes, 0, count);
+								length -= count;
+								System.out.println(length);
+								if (length == 0) break;
+							}
+							
+							System.out.println("Sent");
+						
+						}
+						
+					if (this.biblioteca.get_downloadsOcorrer() == this.MAXDOWN) {
+						this.biblioteca.dec_downloads();
+						this.notify();
+					} else {
+						this.biblioteca.dec_downloads();
+					}
 					
 					}
+					
 					
 				}    
 				
