@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Biblioteca {
 
 	private int id_musica;
+	private int downloads_ocorrer;
 	private ArrayList <User> lista_users;
 	private ArrayList <Music> lista_musicas;
 	
@@ -10,11 +11,25 @@ public class Biblioteca {
 		this.lista_users = new ArrayList <User> ();
 		this.lista_musicas = new ArrayList <Music> ();
 		this.id_musica = 0;
+		this.downloads_ocorrer = 0;
 	}
 	
 	public int get_id () {
 		return this.id_musica;
 	}
+	
+	public synchronized int get_downloadsOcorrer () {
+		return this.downloads_ocorrer;
+	}
+	
+	public synchronized void inc_downloads () {
+		this.downloads_ocorrer++;
+	}
+	
+	public synchronized void dec_downloads () {
+		this.downloads_ocorrer--;
+	}
+	
 	
 	public void inc_id () {
 		this.id_musica++;
@@ -47,7 +62,7 @@ public class Biblioteca {
 		}
 	}
 	
-	public synchronized String get_music (int id) {
+	public String get_music (int id) {
 		String answer = null;
 		
 		for (Music m: this.lista_musicas)
@@ -60,7 +75,7 @@ public class Biblioteca {
 	
 	
 	
-	public synchronized String devolveMusica (String etiqueta) {
+	public String devolveMusica (String etiqueta) {
 		StringBuilder sb = new StringBuilder (10000);
 		
 		for (Music m: this.lista_musicas) {
