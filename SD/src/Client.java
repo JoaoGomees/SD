@@ -64,7 +64,6 @@ public class Client {
     			
 			if ("upload".equals(parser[0])) {
     			
-    			System.out.println("Here");
 				File file = new File(parser[1]);
 				long length = file.length();
 				
@@ -75,21 +74,32 @@ public class Client {
 				int count;
 	
 				System.out.println("Sending");
-				while ((count = inS.read(bytes)) != -1) {
+				while (((count = inS.read(bytes)) != -1) && length != 0) {
 					outS.write(bytes, 0, count);
+					length -= count;
 					outS.flush();
+					System.out.println(length);
 				}
+				
+				System.out.println("Sent");
 			}
 			
 			if ("download".equals(parser[0])) {
 				
-				byte[] mybytearray = new byte[1024];
-				InputStream is = this.clientSocket.getInputStream();
-			    FileOutputStream fos = new FileOutputStream("/Users/Jota/Desktop/musicas/" + parser[1] + ".xml");
-			    BufferedOutputStream bos = new BufferedOutputStream(fos);
-			    int bytesRead = is.read(mybytearray, 0, mybytearray.length);
-			    bos.write(mybytearray, 0, bytesRead);
-			    bos.flush();
+				File file = new File("Music/" + parser[1]);
+				InputStream inS = this.clientSocket.getInputStream();
+				File f = new File("/Users/Jota/Desktop/musicas/" + parser[1] + ".mp3");
+				OutputStream outS = new FileOutputStream(f);
+				byte[] bytes = new byte[(int)file.length()];
+			
+				int count;
+				System.out.println ("Receiving");
+			       while ((count = inS.read(bytes)) > 1) {
+			           outS.write(bytes, 0, count);
+			           
+			       }
+			        
+			    System.out.println("Received");
 				
 			}
 			
