@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Biblioteca {
 
@@ -41,8 +40,27 @@ public class Biblioteca {
 		return resultado;
 	}
 	
+	public synchronized void inc_downloads (int id) {
+		for (Music m: this.lista_musicas) {
+			if (m.get_id() == id)
+				m.inc_numeroDownloads();
+		}
+	}
 	
-	public String devolveMusica (String etiqueta) {
+	public synchronized String get_music (int id) {
+		String answer = null;
+		
+		for (Music m: this.lista_musicas)
+			if (m.get_id() == id)
+				answer = m.get_nome();
+		
+		return answer;
+	}
+	
+	
+	
+	
+	public synchronized String devolveMusica (String etiqueta) {
 		StringBuilder sb = new StringBuilder (10000);
 		
 		for (Music m: this.lista_musicas) {
