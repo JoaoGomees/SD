@@ -1,4 +1,3 @@
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,7 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Service implements Runnable {
@@ -40,6 +38,8 @@ public class Service implements Runnable {
 				
 				if ("create account".equals(parser[0])) {
 					this.biblioteca.createAccount(parser[1], parser[2]);
+					out.println("Conta: " + parser[1] + " criada com sucesso");
+					out.flush();
 				}
 				
 				if ("log in".equals(parser[0])) {
@@ -50,7 +50,7 @@ public class Service implements Runnable {
 					}
 						
 					else {
-						out.println("Falhou! Tente again!");
+						out.println("Falhou! Tente again!\n");
 						out.flush();
 					}
 				}
@@ -67,23 +67,31 @@ public class Service implements Runnable {
 					this.biblioteca.adicionaMusica(nova);
 					this.biblioteca.inc_id();
 					
+					File f = new File(parser[1]);
+					long length = f.length();
 					
-					 InputStream inS = this.clientSocket.getInputStream();
-					 File f = new File(parser[1]);
-					 long length = f.length();
-					 OutputStream outS = new FileOutputStream(new File ("music/" + id));
-					 byte[] bytes = new byte[(int)f.length()];
-				
-					 int count;
-					 System.out.println ("Receiving");
-				        while (((count = inS.read(bytes)) != -1)) {
-				            outS.write(bytes, 0, count);
-				            outS.flush();
-				            length -= count;
-				            if (length == 0) break;
-				        }
-				        
-				     System.out.println("Received");
+					if (length > 7000000) {
+						out.println("Size too big!");
+						out.flush();
+					}
+					else {
+						InputStream inS = this.clientSocket.getInputStream();
+						OutputStream outS = new FileOutputStream(new File ("music/" + id));
+						byte[] bytes = new byte[(int)f.length()];
+					
+						int count;
+						System.out.println ("Receiving");
+							while (((count = inS.read(bytes)) != -1)) {
+					           outS.write(bytes, 0, count);
+					           outS.flush();
+					           length -= count;
+					           if (length == 0) break;
+					       }
+					        
+					    System.out.println("Received");
+					}
+					 
+					
 				
 				}
 				
@@ -91,24 +99,35 @@ public class Service implements Runnable {
 					
 					File file = new File("Music/" + parser[1]);
 					long length = file.length();
-					
-					
-					byte[] bytes = new byte[(int)length];
-					InputStream inS = new FileInputStream(file);
-					System.out.println(file.length());
-					OutputStream outS = this.clientSocket.getOutputStream();
-					int count;
-		
-					System.out.println("Sending");
-					while (((count = inS.read(bytes)) > 1)) {
-						outS.write(bytes, 0, count);
-						length -= count;
-						System.out.println(length);
-						if (length == 0) break;
+					if (length > 7000000) {
+						out.println("Size too big!");
+						out.flush();
 					}
 					
-					System.out.println("Sent");
-				
+					else {
+						this.biblioteca.inc_downloads(Integer.parseInt(parser[1]));
+						
+						out.println(this.biblioteca.get_music(Integer.parseInt(parser[1])));
+						out.flush();
+						
+						byte[] bytes = new byte[(int)length];
+						InputStream inS = new FileInputStream(file);
+						System.out.println(file.length());
+						OutputStream outS = this.clientSocket.getOutputStream();
+						int count;
+			
+						System.out.println("Sending");
+						while (((count = inS.read(bytes)) > 1)) {
+							outS.write(bytes, 0, count);
+							length -= count;
+							System.out.println(length);
+							if (length == 0) break;
+						}
+						
+						System.out.println("Sent");
+					
+					}
+					
 				}    
 				
 				if ("ver musicas".equals(parser[0])) {
