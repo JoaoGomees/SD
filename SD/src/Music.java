@@ -14,7 +14,7 @@ public class Music {
 		this.autor = autor;
 		this.ano = ano;
 		this.numero_downloads = 0;
-		this.categorias = new String [100];
+		this.categorias = new String [etiquetas.length];
 		
 		for (int i = 0; i < etiquetas.length; i++)
 			this.categorias[i] = etiquetas[i];
@@ -52,8 +52,12 @@ public class Music {
 	
 	public String to_String () {
 		StringBuilder sb = new StringBuilder ();
-		sb.append("musica:" + this.get_id() + ":" + this.get_nome() + ":" + this.get_autor());
-		sb.append("\n");
+		sb.append("id:" + this.get_id() + " titulo:" + this.get_nome() + " autor:" + this.get_autor() + " ano:" + this.get_ano() + " numero_download:" + this.get_numeroDownloads());
+		sb.append("     Etiquetas:");
+		for (int i = 0; i < this.categorias.length; i++) 
+			sb.append(categorias[i] + ": ");
+		
+		sb.append("     ");
 		return sb.toString();
 	}
 }
