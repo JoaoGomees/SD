@@ -70,13 +70,17 @@ public class Service implements Runnable {
 					
 					 InputStream inS = this.clientSocket.getInputStream();
 					 File f = new File(parser[1]);
-					 OutputStream outS = new FileOutputStream(new File ("music/" + id ));
+					 long length = f.length();
+					 OutputStream outS = new FileOutputStream(new File ("music/" + id));
 					 byte[] bytes = new byte[(int)f.length()];
 				
 					 int count;
 					 System.out.println ("Receiving");
-				        while ((count = inS.read(bytes)) != -1) {
+				        while (((count = inS.read(bytes)) != -1)) {
 				            outS.write(bytes, 0, count);
+				            outS.flush();
+				            length -= count;
+				            if (length == 0) break;
 				        }
 				        
 				     System.out.println("Received");
@@ -84,13 +88,26 @@ public class Service implements Runnable {
 				}
 				
 				if ("download".equals(parser[0])) {
-					File file = new File ("/Users/Jota/eclipse-workspace/SD/Music/" + parser[1]);
-					byte[] mybytearray = new byte[(int) file.length()];
-					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-					bis.read(mybytearray, 0, mybytearray.length);
-					OutputStream os = this.clientSocket.getOutputStream();
-					os.write(mybytearray, 0, mybytearray.length);
-				    os.flush();
+					
+					File file = new File("Music/" + parser[1]);
+					long length = file.length();
+					
+					
+					byte[] bytes = new byte[(int)length];
+					InputStream inS = new FileInputStream(file);
+					System.out.println(file.length());
+					OutputStream outS = this.clientSocket.getOutputStream();
+					int count;
+		
+					System.out.println("Sending");
+					while (((count = inS.read(bytes)) > 1)) {
+						outS.write(bytes, 0, count);
+						length -= count;
+						System.out.println(length);
+						if (length == 0) break;
+					}
+					
+					System.out.println("Sent");
 				
 				}    
 				
