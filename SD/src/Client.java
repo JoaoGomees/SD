@@ -37,10 +37,16 @@ public class Client {
     	while (true ) {
     		
     		if (!this.login) {
+    			System.out.println("");
     			System.out.println("To create an account write -> create account:<username>:<password>");
     			System.out.println("To log in with your account write -> log in:<username>:<password>");
     		} else {
-    			;
+    			System.out.println("");
+    			System.out.println("To upload a music write -> upload:<file_path>:<musicName>:<singerName>:<year>:<numeroVariavelEtiquetas>");
+    			System.out.println("To download a music write -> download:<id_musica>:<path da diretoria onde fazer download>");
+    			System.out.println("Para ver musicas com uma dada etiqueta -> ver musicas:<etiqueta>");
+    			
+    			
     		}
 			
 			String input = buffer.nextLine();
@@ -51,7 +57,8 @@ public class Client {
     		
     		if ("quit".equals(parser[0])) break;
     		
-    		if ("create account".equals(parser[0]));
+    		if ("create account".equals(parser[0])) 
+    			System.out.println (in.readLine());
     		
     		if ("log in".equals(parser[0]))  {
     			String answer = in.readLine();
@@ -67,39 +74,59 @@ public class Client {
 				File file = new File(parser[1]);
 				long length = file.length();
 				
+				if (length > 7000000) 
+					System.out.println(in.readLine());
 				
-				byte[] bytes = new byte[(int)length];
-				InputStream inS = new FileInputStream(file);
-				OutputStream outS = this.clientSocket.getOutputStream();
-				int count;
-	
-				System.out.println("Sending");
-				while (((count = inS.read(bytes)) != -1) && length != 0) {
-					outS.write(bytes, 0, count);
-					length -= count;
-					outS.flush();
-					System.out.println(length);
+				else {
+					byte[] bytes = new byte[(int)length];
+					InputStream inS = new FileInputStream(file);
+					OutputStream outS = this.clientSocket.getOutputStream();
+					int count;
+		
+					System.out.println("Sending");
+					while (((count = inS.read(bytes)) != -1) && length != 0) {
+						outS.write(bytes, 0, count);
+						length -= count;
+						outS.flush();
+						System.out.println(length);
+					}
+					
+					System.out.println("Sent");
 				}
-				
-				System.out.println("Sent");
 			}
+				
+				
+				
 			
 			if ("download".equals(parser[0])) {
 				
+				String nome = in.readLine();
 				File file = new File("Music/" + parser[1]);
-				InputStream inS = this.clientSocket.getInputStream();
-				File f = new File("/Users/Jota/Desktop/musicas/" + parser[1] + ".mp3");
-				OutputStream outS = new FileOutputStream(f);
-				byte[] bytes = new byte[(int)file.length()];
-			
-				int count;
-				System.out.println ("Receiving");
-			       while ((count = inS.read(bytes)) > 1) {
-			           outS.write(bytes, 0, count);
-			           
-			       }
-			        
-			    System.out.println("Received");
+				long length = file.length();
+				
+				if (length > 7000000) {
+					out.println("Size too big!");
+					out.flush();
+				}
+				
+				else {
+					InputStream inS = this.clientSocket.getInputStream();
+					File f = new File(parser[2] + "/" + nome + ".mp3");
+					OutputStream outS = new FileOutputStream(f);
+					byte[] bytes = new byte[(int)file.length()];
+				
+					int count;
+					System.out.println ("Receiving");
+				       while ((count = inS.read(bytes)) > 1) {
+				           outS.write(bytes, 0, count);
+				           length -= count;
+				           if (length == 0) break;
+				       }
+				        
+				    System.out.println("Received");
+					
+				}
+				
 				
 			}
 			
